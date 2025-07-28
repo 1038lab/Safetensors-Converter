@@ -1,0 +1,9 @@
+# Safetensor Converter Requirements
+# Install with: pip install -r safetensor_converter_requirements.txt
+
+# Core dependencies
+torch>=1.9.0
+safetensors>=0.3.0
+
+# Optional: for better performance
+# numpy>=1.21.0  # Usually included with torch 
