@@ -27,7 +27,7 @@ A robust and comprehensive Python tool to convert various AI model formats to `.
 ### Prerequisites
 
 ```bash
-pip install -r safetensor_converter_requirements.txt
+pip install -r requirements.txt
 ```
 
 Or install manually:
