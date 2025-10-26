@@ -17,7 +17,6 @@ Usage:
     python safetensor_converter.py <input_directory> --batch
     python safetensor_converter.py --help
 """
-
 import os
 import sys
 import torch
@@ -69,7 +68,7 @@ def load_model_file(file_path):
     
     return None
 
-def extract_state_dict(data):
+def extract_state_dict(data, input_file):
     """Extract state dict from various data structures"""
     
     if isinstance(data, dict):
@@ -91,8 +90,16 @@ def extract_state_dict(data):
             print("Using data as state dict")
             return data
     elif isinstance(data, torch.Tensor):
+        # Core Fix: For all single tensor files (data is a raw torch.Tensor), use the filename as the key.
         print("Warning: Data is a tensor, converting to dict format")
-        return {"model": data}
+        
+        file_base_name = os.path.splitext(os.path.basename(input_file))[0]
+        
+        # Universal solution: Use the filename as the key. Fallback to "model" if no filename exists.
+        key_name = file_base_name if file_base_name else "model" 
+            
+        print(f"Applying key '{key_name}' for single tensor.")
+        return {key_name: data}
     else:
         print(f"Warning: Unknown data type {type(data)}, converting to dict format")
         return {"model": data}
@@ -233,8 +240,8 @@ def convert_file(input_file, output_file=None):
         # Load the model file
         data = load_model_file(input_file)
         
-        # Extract state dict
-        state_dict = extract_state_dict(data)
+        # Extract state dict (pass input_file to enable key-fixing logic)
+        state_dict = extract_state_dict(data, input_file) 
         
         # Clean state dict
         state_dict = clean_state_dict(state_dict)
@@ -348,7 +355,27 @@ Supported formats: .pth, .pt, .bin, .ckpt
 if __name__ == "__main__":
     # If no arguments provided, show usage
     if len(sys.argv) == 1:
-        print(__doc__)
+        # Use the docstring from the top of the file for usage info
+        docstring = """
+Safetensor Converter
+A unified tool to convert various AI model formats to .safetensors format
+
+Features:
+- Supports multiple input formats: .pth, .pt, .bin, .ckpt
+- Automatic module prefix removal
+- Universal key handling for single-tensor files
+- Shared tensor detection and cloning
+- Error recovery mechanisms
+- Automatic validation (built-in)
+- Batch processing
+- Comprehensive error handling
+
+Usage:
+    python safetensor_converter.py <input_file> [output_file]
+    python safetensor_converter.py <input_directory> --batch
+    python safetensor_converter.py --help
+"""
+        print(docstring)
         print("\nExamples:")
         print("  python safetensor_converter.py model.pth")
         print("  python safetensor_converter.py model.pt output.safetensors")
@@ -356,4 +383,4 @@ if __name__ == "__main__":
         print(f"\nSupported formats: {', '.join(SUPPORTED_EXTENSIONS)}")
         sys.exit(0)
     
-    main() 
+    main()
