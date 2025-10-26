@@ -82,6 +82,9 @@ python safetensor_converter.py checkpoint.ckpt
 
 # Batch convert all models in current directory
 python safetensor_converter.py . --batch
+
+# Compare Orginal file and converted safetensors
+python tensor_Comparator.py model.pth model.safetensors
 ```
 
 ## 🔧 How It Works
@@ -284,3 +287,4 @@ This script is provided as-is for educational and practical use. Feel free to mo
 - `safetensor_converter.py` - Main conversion script
 - `safetensor_converter_requirements.txt` - Required dependencies
 - `README.md` - This documentation
+
